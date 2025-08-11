@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { useNavigate } from 'react-router-dom';
 import Image from '../../../components/AppImage';
 
 const FeaturedProjects = () => {
   const [currentProject, setCurrentProject] = useState(0);
+  const navigate = useNavigate();
 
   const projects = [
     {
@@ -219,11 +221,11 @@ const FeaturedProjects = () => {
 
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <button className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center space-x-2">
+                    <button onClick={() => window.open(projects?.[currentProject]?.githubUrl, '_blank', 'noopener')} className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center space-x-2">
                       <Icon name="Github" size={20} />
                       <span>View on GitHub</span>
                     </button>
-                    <button className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center space-x-2">
+                    <button onClick={() => navigate('/projects')} className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center space-x-2">
                       <Icon name="ExternalLink" size={20} />
                       <span>Live Demo</span>
                     </button>
@@ -271,7 +273,7 @@ const FeaturedProjects = () => {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-flex items-center space-x-2">
+            <button onClick={() => navigate('/projects')} className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-flex items-center space-x-2">
               <Icon name="FolderOpen" size={20} />
               <span>Browse All Projects</span>
               <Icon name="ArrowRight" size={16} />

@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { useNavigate } from 'react-router-dom';
 
 const UniversityPartnerships = () => {
+  const navigate = useNavigate();
   const universities = [
     {
       name: "Massachusetts Institute of Technology",
@@ -173,7 +175,7 @@ const UniversityPartnerships = () => {
               </div>
               
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <button className="w-full text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center justify-center space-x-2 py-2 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                <button onClick={() => navigate('/partners')} className="w-full text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center justify-center space-x-2 py-2 hover:bg-blue-50 rounded-lg transition-colors duration-200">
                   <span>View Campus Stats</span>
                   <Icon name="ArrowRight" size={14} />
                 </button>
@@ -264,7 +266,7 @@ const UniversityPartnerships = () => {
                   </div>
                 </div>
                 
-                <button className="w-full bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button onClick={() => navigate('/contact')} className="w-full bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200 flex items-center justify-center space-x-2">
                   <Icon name="Mail" size={20} />
                   <span>Contact Partnership Team</span>
                 </button>

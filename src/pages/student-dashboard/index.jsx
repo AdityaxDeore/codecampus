@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import { getSession } from '../../utils/auth';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -12,20 +13,26 @@ const StudentDashboard = () => {
   const [loginMethod, setLoginMethod] = useState('');
 
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    const email = localStorage.getItem('userEmail');
-    const name = localStorage.getItem('userName');
-    const method = localStorage.getItem('loginMethod');
-    
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    
-    setUserEmail(email || '');
-    setUserName(name || '');
-    setLoginMethod(method || '');
+    (async () => {
+      // Prefer Supabase session
+      const session = await getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email || '');
+        setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
+        setLoginMethod(session.user.app_metadata?.provider || '');
+        return;
+      }
+
+      // Fallback to local storage (legacy)
+      const isAuthenticated = localStorage.getItem('isAuthenticated');
+      if (!isAuthenticated) {
+        navigate('/login');
+        return;
+      }
+      setUserEmail(localStorage.getItem('userEmail') || '');
+      setUserName(localStorage.getItem('userName') || '');
+      setLoginMethod(localStorage.getItem('loginMethod') || '');
+    })();
   }, [navigate]);
 
   // Mock dashboard data
@@ -35,28 +42,32 @@ const StudentDashboard = () => {
       value: '47', 
       change: '+12 this week',
       icon: 'Code',
-      color: 'blue'
+      color: 'blue',
+      href: '/problem-history'
     },
     { 
       label: 'Current Streak', 
       value: '8 days', 
       change: 'Keep going!',
       icon: 'Flame',
-      color: 'orange'
+      color: 'orange',
+      href: '/achievement-center'
     },
     { 
       label: 'Forum Posts', 
       value: '23', 
       change: '+5 this week',
       icon: 'MessageSquare',
-      color: 'green'
+      color: 'green',
+      href: '/campus-forums'
     },
     { 
       label: 'Total XP', 
       value: '2,847', 
       change: '+280 this week',
       icon: 'Trophy',
-      color: 'purple'
+      color: 'purple',
+      href: '/achievement-center'
     }
   ];
 
@@ -176,7 +187,11 @@ const StudentDashboard = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <Link
+                  key={index}
+                  to={stat.href}
+                  className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-gray-300 transition-all cursor-pointer"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-${stat.color}-100`}>
                       <Icon name={stat.icon} size={24} className={`text-${stat.color}-600`} />
@@ -187,7 +202,7 @@ const StudentDashboard = () => {
                     <p className="text-sm text-gray-600">{stat.label}</p>
                     <p className="text-xs text-green-600">{stat.change}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -198,9 +213,9 @@ const StudentDashboard = () => {
                   <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {quickActions.map((action, index) => (
-                      <a
+                      <Link
                         key={index}
-                        href={action.href}
+                        to={action.href}
                         className="flex items-center space-x-4 p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
                       >
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${action.color}-100`}>
@@ -210,7 +225,7 @@ const StudentDashboard = () => {
                           <h3 className="font-medium text-gray-900">{action.title}</h3>
                           <p className="text-sm text-gray-600">{action.description}</p>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -232,9 +247,11 @@ const StudentDashboard = () => {
                     ))}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <Button variant="outline" size="sm" className="w-full">
-                      View All Activity
-                    </Button>
+                    <Link to="/status" className="block">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View All Activity
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -284,9 +301,11 @@ const StudentDashboard = () => {
                     ))}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <Button variant="outline" size="sm" className="w-full">
-                      View All Events
-                    </Button>
+                    <Link to="/events" className="block">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View All Events
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>

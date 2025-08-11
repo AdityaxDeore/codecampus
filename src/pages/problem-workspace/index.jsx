@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import ProblemPanel from './components/ProblemPanel';
 import CodeEditor from './components/CodeEditor';
@@ -10,6 +11,9 @@ import SuccessAnimation from './components/SuccessAnimation';
 import Button from '../../components/ui/Button';
 
 const ProblemWorkspace = () => {
+  const [searchParams] = useSearchParams();
+  const problemId = searchParams.get('id');
+  
   const [showHints, setShowHints] = useState(false);
   const [showTestResults, setShowTestResults] = useState(false);
   const [showSubmissionHistory, setShowSubmissionHistory] = useState(false);
@@ -19,67 +23,135 @@ const ProblemWorkspace = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState(null);
   const [submissions, setSubmissions] = useState([]);
+  const [currentProblem, setCurrentProblem] = useState(null);
 
-  // Mock problem data
-  const problem = {
-    id: 1,
-    title: "Two Sum",
-    difficulty: "Easy",
-    successRate: 87,
-    description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.`,
-    constraints: [
-      "2 ≤ nums.length ≤ 10⁴",
-      "-10⁹ ≤ nums[i] ≤ 10⁹",
-      "-10⁹ ≤ target ≤ 10⁹",
-      "Only one valid answer exists."
-    ],
-    tags: ["Array", "Hash Table", "Two Pointers"],
-    hints: [
-      "A really brute force way would be to search for all possible pairs of numbers but that would be too slow.",
-      "Again, the best way to maintain a mapping of each element in the array to its index is a hash table.",
-      "The best time complexity that we can achieve is O(n) where n is the number of elements in the array."
-    ],
-    examples: [
-      {
-        input: "nums = [2,7,11,15], target = 9",
-        output: "[0,1]",
-        explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]."
-      },
-      {
-        input: "nums = [3,2,4], target = 6",
-        output: "[1,2]",
-        explanation: "Because nums[1] + nums[2] == 6, we return [1, 2]."
-      },
-      {
-        input: "nums = [3,3], target = 6",
-        output: "[0,1]",
-        explanation: "Because nums[0] + nums[1] == 6, we return [0, 1]."
-      }
-    ],
-    discussions: [
-      {
-        id: 1,
-        author: "Alex Chen",
-        content: "Has anyone tried using a hash map approach? I\'m getting the right answer but wondering about the time complexity.",
-        timestamp: "2 hours ago",
-        likes: 12
-      },
-      {
-        id: 2,
-        author: "Sarah Kim",
-        content: "The hash map approach is O(n) time and O(n) space. Much better than the brute force O(n²) solution!",
-        timestamp: "1 hour ago",
-        likes: 8
-      },
-      {
-        id: 3,
-        author: "Mike Rodriguez",
-        content: "Don\'t forget to handle the edge case where the same element can\'t be used twice. Check the indices!",
-        timestamp: "45 minutes ago",
-        likes: 15
-      }
-    ]
+  // Mock problems database
+  const problemsDatabase = {
+    1: {
+      id: 1,
+      title: "Two Sum",
+      difficulty: "Easy",
+      successRate: 87,
+      description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.`,
+      constraints: [
+        "2 ≤ nums.length ≤ 10⁴",
+        "-10⁹ ≤ nums[i] ≤ 10⁹",
+        "-10⁹ ≤ target ≤ 10⁹",
+        "Only one valid answer exists."
+      ],
+      tags: ["Array", "Hash Table", "Two Pointers"],
+      hints: [
+        "A really brute force way would be to search for all possible pairs of numbers but that would be too slow.",
+        "Again, the best way to maintain a mapping of each element in the array to its index is a hash table.",
+        "The best time complexity that we can achieve is O(n) where n is the number of elements in the array."
+      ],
+      examples: [
+        {
+          input: "nums = [2,7,11,15], target = 9",
+          output: "[0,1]",
+          explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]."
+        },
+        {
+          input: "nums = [3,2,4], target = 6",
+          output: "[1,2]",
+          explanation: "Because nums[1] + nums[2] == 6, we return [1, 2]."
+        },
+        {
+          input: "nums = [3,3], target = 6",
+          output: "[0,1]",
+          explanation: "Because nums[0] + nums[1] == 6, we return [0, 1]."
+        }
+      ],
+      discussions: [
+        {
+          id: 1,
+          author: "Alex Chen",
+          content: "Has anyone tried using a hash map approach? I'm getting the right answer but wondering about the time complexity.",
+          timestamp: "2 hours ago",
+          likes: 12
+        },
+        {
+          id: 2,
+          author: "Sarah Kim",
+          content: "The hash map approach is O(n) time and O(n) space. Much better than the brute force O(n²) solution!",
+          timestamp: "1 hour ago",
+          likes: 8
+        },
+        {
+          id: 3,
+          author: "Mike Rodriguez",
+          content: "Don't forget to handle the edge case where the same element can't be used twice. Check the indices!",
+          timestamp: "45 minutes ago",
+          likes: 15
+        }
+      ]
+    },
+    2: {
+      id: 2,
+      title: "Add Two Numbers",
+      difficulty: "Medium",
+      successRate: 67,
+      description: `You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.`,
+      constraints: [
+        "The number of nodes in each linked list is in the range [1, 100]",
+        "0 ≤ Node.val ≤ 9",
+        "It is guaranteed that the list represents a number that does not have leading zeros"
+      ],
+      tags: ["LinkedList", "Math", "Recursion"],
+      hints: [
+        "Keep track of the carry while traversing both linked lists.",
+        "Don't forget to handle the case where one list is longer than the other.",
+        "After processing both lists, check if there's still a carry to add."
+      ],
+      examples: [
+        {
+          input: "l1 = [2,4,3], l2 = [5,6,4]",
+          output: "[7,0,8]",
+          explanation: "342 + 465 = 807"
+        }
+      ],
+      discussions: []
+    },
+    101: {
+      id: 101,
+      title: "Fix the Array Sum Bug",
+      difficulty: "Easy",
+      successRate: 78,
+      description: `The following function is supposed to calculate the sum of all elements in an array, but it contains a bug. Your task is to identify and fix the bug.\n\n\`\`\`javascript\nfunction arraySum(arr) {\n    let sum = 1; // Bug is here!\n    for (let i = 0; i < arr.length; i++) {\n        sum += arr[i];\n    }\n    return sum;\n}\n\`\`\`\n\nThe function should return 0 for an empty array and the correct sum for non-empty arrays.`,
+      constraints: [
+        "Array length can be 0 to 1000",
+        "Array elements are integers between -1000 and 1000"
+      ],
+      tags: ["Logic Errors", "Array", "Debugging"],
+      hints: [
+        "Check the initial value of the sum variable.",
+        "What should the sum be when starting the calculation?"
+      ],
+      examples: [
+        {
+          input: "arr = [1, 2, 3, 4, 5]",
+          output: "15",
+          explanation: "Sum of 1+2+3+4+5 = 15"
+        },
+        {
+          input: "arr = []",
+          output: "0",
+          explanation: "Sum of empty array should be 0"
+        }
+      ],
+      discussions: []
+    }
   };
+
+  // Load problem based on ID
+  useEffect(() => {
+    if (problemId && problemsDatabase[problemId]) {
+      setCurrentProblem(problemsDatabase[problemId]);
+    } else {
+      // Default to problem 1 if no ID or invalid ID
+      setCurrentProblem(problemsDatabase[1]);
+    }
+  }, [problemId]);
 
   // Mock submission history
   const mockSubmissions = [
@@ -219,83 +291,92 @@ const ProblemWorkspace = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="pt-16 h-screen flex flex-col">
-        {/* Collaborative Mode */}
-        <CollaborativeMode
-          isActive={showCollaborativeMode}
-          onToggle={() => setShowCollaborativeMode(!showCollaborativeMode)}
-          onInviteUser={handleInviteUser}
-        />
-
-        {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Problem Panel */}
-          <div className="w-1/2 border-r border-border">
-            <ProblemPanel
-              problem={problem}
-              onToggleHints={() => setShowHints(!showHints)}
-              showHints={showHints}
-            />
+      {!currentProblem ? (
+        <div className="pt-16 h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading problem...</p>
           </div>
+        </div>
+      ) : (
+        <div className="pt-16 h-screen flex flex-col">
+          {/* Collaborative Mode */}
+          <CollaborativeMode
+            isActive={showCollaborativeMode}
+            onToggle={() => setShowCollaborativeMode(!showCollaborativeMode)}
+            onInviteUser={handleInviteUser}
+          />
 
-          {/* Code Editor */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex-1">
-              <CodeEditor
-                onRunCode={handleRunCode}
-                onSubmitCode={handleSubmitCode}
-                isRunning={isRunning}
-                isSubmitting={isSubmitting}
+          {/* Main Content */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Problem Panel */}
+            <div className="w-1/2 border-r border-border">
+              <ProblemPanel
+                problem={currentProblem}
+                onToggleHints={() => setShowHints(!showHints)}
+                showHints={showHints}
               />
             </div>
 
-            {/* Test Results Panel */}
-            <TestResults
-              results={testResults}
-              isVisible={showTestResults}
-              onToggle={() => setShowTestResults(!showTestResults)}
+            {/* Code Editor */}
+            <div className="flex-1 flex flex-col">
+              <div className="flex-1">
+                <CodeEditor
+                  onRunCode={handleRunCode}
+                  onSubmitCode={handleSubmitCode}
+                  isRunning={isRunning}
+                  isSubmitting={isSubmitting}
+                />
+              </div>
+
+              {/* Test Results Panel */}
+              <TestResults
+                results={testResults}
+                isVisible={showTestResults}
+                onToggle={() => setShowTestResults(!showTestResults)}
+              />
+            </div>
+
+            {/* Submission History Sidebar */}
+            {showSubmissionHistory && (
+              <SubmissionHistory
+                submissions={submissions}
+                isVisible={showSubmissionHistory}
+                onToggle={() => setShowSubmissionHistory(!showSubmissionHistory)}
+                onViewSubmission={handleViewSubmission}
+              />
+            )}
+          </div>
+
+          {/* Floating Action Buttons */}
+          <div className="fixed bottom-6 right-6 flex flex-col space-y-3">
+            <Button
+              variant={showSubmissionHistory ? "default" : "outline"}
+              onClick={() => setShowSubmissionHistory(!showSubmissionHistory)}
+              iconName="History"
+              className="rounded-full w-12 h-12 p-0"
+            />
+            <Button
+              variant={showCollaborativeMode ? "default" : "outline"}
+              onClick={() => setShowCollaborativeMode(!showCollaborativeMode)}
+              iconName="Users"
+              className="rounded-full w-12 h-12 p-0"
             />
           </div>
 
-          {/* Submission History Sidebar */}
-          {showSubmissionHistory && (
-            <SubmissionHistory
-              submissions={submissions}
-              isVisible={showSubmissionHistory}
-              onToggle={() => setShowSubmissionHistory(!showSubmissionHistory)}
-              onViewSubmission={handleViewSubmission}
-            />
-          )}
-        </div>
-
-        {/* Floating Action Buttons */}
-        <div className="fixed bottom-6 right-6 flex flex-col space-y-3">
-          <Button
-            variant={showSubmissionHistory ? "default" : "outline"}
-            onClick={() => setShowSubmissionHistory(!showSubmissionHistory)}
-            iconName="History"
-            className="rounded-full w-12 h-12 p-0"
-          />
-          <Button
-            variant={showCollaborativeMode ? "default" : "outline"}
-            onClick={() => setShowCollaborativeMode(!showCollaborativeMode)}
-            iconName="Users"
-            className="rounded-full w-12 h-12 p-0"
+          {/* Success Animation */}
+          <SuccessAnimation
+            isVisible={showSuccessAnimation}
+            onClose={() => setShowSuccessAnimation(false)}
+            submissionData={{
+              runtime: 68,
+              memory: 42.1,
+              runtimePercentile: 85,
+              memoryPercentile: 92
+            }}
           />
         </div>
-
-        {/* Success Animation */}
-        <SuccessAnimation
-          isVisible={showSuccessAnimation}
-          onClose={() => setShowSuccessAnimation(false)}
-          submissionData={{
-            runtime: 68,
-            memory: 42.1,
-            runtimePercentile: 85,
-            memoryPercentile: 92
-          }}
-        />
-      </div>
+      )}
     </div>
   );
 };

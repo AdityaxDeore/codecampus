@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { signOut as supaSignOut } from '../../utils/auth';
 import Icon from '../AppIcon';
 
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigationItems = [
     { name: 'Dashboard', path: '/student-dashboard', icon: 'LayoutDashboard' },
-    { name: 'Problems', path: '/problem-workspace', icon: 'Code' },
+    { name: 'Problems', path: '/problems', icon: 'Code' },
     { name: 'Forums', path: '/campus-forums', icon: 'MessageSquare' },
     { name: 'Achievements', path: '/achievement-center', icon: 'Trophy' },
   ];
@@ -97,9 +99,9 @@ const Header = () => {
             <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-lg academic-shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible academic-transition z-50">
               <div className="py-2">
                 {moreItems?.map((item) => (
-                  <a
+                  <Link
                     key={item?.path}
-                    href={item?.path}
+                    to={item?.path}
                     className={`flex items-center space-x-3 px-4 py-2 text-sm hover:bg-muted academic-transition ${
                       isActivePath(item?.path)
                         ? 'text-primary font-medium' :'text-popover-foreground'
@@ -107,7 +109,7 @@ const Header = () => {
                   >
                     <Icon name={item?.icon} size={16} />
                     <span>{item?.name}</span>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -117,7 +119,7 @@ const Header = () => {
         {/* User Actions */}
         <div className="flex items-center space-x-3">
           {/* Notifications */}
-          <button className="relative p-2 text-muted-foreground hover:text-primary academic-transition">
+          <button onClick={() => navigate('/status')} className="relative p-2 text-muted-foreground hover:text-primary academic-transition">
             <Icon name="Bell" size={20} />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full"></span>
           </button>
@@ -137,16 +139,16 @@ const Header = () => {
             
             <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-lg academic-shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible academic-transition z-50">
               <div className="py-2">
-                <a href="/profile" className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition">
+                <Link to="/profile" className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition">
                   <Icon name="User" size={16} />
                   <span>Profile</span>
-                </a>
-                <a href="/settings" className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition">
+                </Link>
+                <Link to="/settings" className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition">
                   <Icon name="Settings" size={16} />
                   <span>Settings</span>
-                </a>
+                </Link>
                 <hr className="my-2 border-border" />
-                <button className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition w-full text-left">
+                <button onClick={async () => { try { await supaSignOut(); } catch (e) {} navigate('/login'); }} className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition w-full text-left">
                   <Icon name="LogOut" size={16} />
                   <span>Sign Out</span>
                 </button>
@@ -168,9 +170,9 @@ const Header = () => {
         <div className="lg:hidden bg-background border-t border-border">
           <nav className="px-4 py-4 space-y-2">
             {navigationItems?.map((item) => (
-              <a
+              <Link
                 key={item?.path}
-                href={item?.path}
+                to={item?.path}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium academic-transition ${
                   isActivePath(item?.path)
                     ? 'bg-primary text-primary-foreground'
@@ -180,15 +182,15 @@ const Header = () => {
               >
                 <Icon name={item?.icon} size={18} />
                 <span>{item?.name}</span>
-              </a>
+              </Link>
             ))}
             
             <hr className="my-4 border-border" />
             
             {moreItems?.map((item) => (
-              <a
+              <Link
                 key={item?.path}
-                href={item?.path}
+                to={item?.path}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm academic-transition ${
                   isActivePath(item?.path)
                     ? 'text-primary font-medium bg-muted' :'text-foreground hover:bg-muted'
@@ -197,7 +199,7 @@ const Header = () => {
               >
                 <Icon name={item?.icon} size={18} />
                 <span>{item?.name}</span>
-              </a>
+              </Link>
             ))}
           </nav>
         </div>

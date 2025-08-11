@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { useNavigate } from 'react-router-dom';
 import Image from '../../../components/AppImage';
 
 const ActivityFeed = () => {
   const [currentActivity, setCurrentActivity] = useState(0);
+  const navigate = useNavigate();
 
   const activities = [
     {
@@ -260,7 +262,7 @@ const ActivityFeed = () => {
               </div>
 
               <div className="mt-6 pt-4 border-t border-gray-200">
-                <button className="w-full text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center justify-center space-x-2 py-2 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                <button onClick={() => navigate('/status')} className="w-full text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center justify-center space-x-2 py-2 hover:bg-blue-50 rounded-lg transition-colors duration-200">
                   <span>View All Activity</span>
                   <Icon name="ArrowRight" size={16} />
                 </button>

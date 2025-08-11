@@ -114,7 +114,7 @@ const ValueProposition = () => {
 
                   {/* CTA */}
                   <div className="pt-4">
-                    <button className={`${colors?.accent} font-semibold text-sm hover:underline flex items-center space-x-2 group-hover:translate-x-1 transition-transform duration-300`}>
+                    <button onClick={() => navigate('/about-code-campus')} className={`${colors?.accent} font-semibold text-sm hover:underline flex items-center space-x-2 group-hover:translate-x-1 transition-transform duration-300`}>
                       <span>Learn More</span>
                       <Icon name="ArrowRight" size={16} />
                     </button>
