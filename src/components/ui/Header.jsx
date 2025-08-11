@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import Icon from '../AppIcon';
 
 
@@ -31,7 +31,7 @@ const Header = () => {
       <div className="flex items-center justify-between h-16 px-4 lg:px-6">
         {/* Logo Section */}
         <div className="flex items-center">
-          <a href="/homepage" className="flex items-center space-x-3">
+          <Link to="/homepage" className="flex items-center space-x-3">
             <div className="relative">
               <svg
                 width="32"
@@ -67,15 +67,15 @@ const Header = () => {
               <h1 className="text-xl font-bold text-primary">CodeCampus</h1>
               <p className="text-xs text-muted-foreground -mt-1">Academic Excellence</p>
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-1">
           {navigationItems?.map((item) => (
-            <a
+            <Link
               key={item?.path}
-              href={item?.path}
+              to={item?.path}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium academic-transition ${
                 isActivePath(item?.path)
                   ? 'bg-primary text-primary-foreground'
@@ -84,7 +84,7 @@ const Header = () => {
             >
               <Icon name={item?.icon} size={16} />
               <span>{item?.name}</span>
-            </a>
+            </Link>
           ))}
           
           {/* More Dropdown */}

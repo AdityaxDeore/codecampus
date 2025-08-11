@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 
 const TestimonialSection = () => {
+  const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const testimonials = [
@@ -267,9 +269,12 @@ const TestimonialSection = () => {
           </div>
 
           <div className="mt-12">
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-flex items-center space-x-2">
-              <Icon name="Users" size={20} />
-              <span>Join Our Success Stories</span>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-flex items-center space-x-2"
+            >
+              <Icon name="GraduationCap" size={20} />
+              <span>Join Your Campus</span>
               <Icon name="ArrowRight" size={16} />
             </button>
           </div>

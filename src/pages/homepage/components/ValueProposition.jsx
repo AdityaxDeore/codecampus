@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 
 const ValueProposition = () => {
+  const navigate = useNavigate();
   const values = [
     {
       icon: "Users",
@@ -136,9 +138,12 @@ const ValueProposition = () => {
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
               Join thousands of students who are already building their future in tech. Start with your .edu email today.
             </p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300 inline-flex items-center space-x-2">
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300 inline-flex items-center space-x-2"
+            >
               <Icon name="GraduationCap" size={20} />
-              <span>Get Started Free</span>
+              <span>Join Your Campus</span>
             </button>
           </div>
         </motion.div>
