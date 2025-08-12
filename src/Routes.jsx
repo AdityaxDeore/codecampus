@@ -15,6 +15,8 @@ import Projects from './pages/projects';
 import StatusPage from './pages/status';
 import ProblemHistory from './pages/problem-history';
 import Problems from './pages/problems';
+import LearningPathways from './pages/learning-pathways';
+import GoalsHomework from './pages/goals-homework';
 
 const Routes = () => {
   return (
@@ -29,6 +31,8 @@ const Routes = () => {
         <Route path="/campus-forums" element={<CampusForums />} />
         <Route path="/achievement-center" element={<AchievementCenter />} />
         <Route path="/problems" element={<Problems />} />
+        <Route path="/learning-pathways" element={<LearningPathways />} />
+        <Route path="/goals-homework" element={<GoalsHomework />} />
         <Route path="/problem-workspace" element={<ProblemWorkspace />} />
         <Route path="/problem-history" element={<ProblemHistory />} />
         <Route path="/about-code-campus" element={<AboutCodeCampus />} />

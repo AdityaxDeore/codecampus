@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { signOut as supaSignOut } from '../../utils/auth';
 import Icon from '../AppIcon';
+import DarkModeToggle from './DarkModeToggle';
 
 
 const Header = () => {
@@ -12,11 +13,13 @@ const Header = () => {
   const navigationItems = [
     { name: 'Dashboard', path: '/student-dashboard', icon: 'LayoutDashboard' },
     { name: 'Problems', path: '/problems', icon: 'Code' },
+    { name: 'Learning Paths', path: '/learning-pathways', icon: 'BookOpen' },
+    { name: 'Goals & Homework', path: '/goals-homework', icon: 'Target' },
     { name: 'Forums', path: '/campus-forums', icon: 'MessageSquare' },
-    { name: 'Achievements', path: '/achievement-center', icon: 'Trophy' },
   ];
 
   const moreItems = [
+    { name: 'Achievements', path: '/achievement-center', icon: 'Trophy' },
     { name: 'About', path: '/about-code-campus', icon: 'Info' },
     { name: 'Settings', path: '/settings', icon: 'Settings' },
     { name: 'Help', path: '/help', icon: 'HelpCircle' },
@@ -118,6 +121,9 @@ const Header = () => {
 
         {/* User Actions */}
         <div className="flex items-center space-x-3">
+          {/* Dark Mode Toggle */}
+          <DarkModeToggle />
+
           {/* Notifications */}
           <button onClick={() => navigate('/status')} className="relative p-2 text-muted-foreground hover:text-primary academic-transition">
             <Icon name="Bell" size={20} />

@@ -1144,9 +1144,9 @@ const useApi = (url) => {
         <h3 className="font-semibold text-gray-900 mb-3">Sort Posts</h3>
         <div className="space-y-2">
           {[
-            { value: 'hot', label: '🔥 Hot', desc: 'Most engaging' },
-            { value: 'new', label: '🆕 New', desc: 'Latest posts' },
-            { value: 'top', label: '⬆️ Top', desc: 'Highest voted' }
+            { value: 'hot', label: 'Hot', desc: 'Most engaging' },
+            { value: 'new', label: 'New', desc: 'Latest posts' },
+            { value: 'top', label: 'Top', desc: 'Highest voted' }
           ].map((sort) => (
             <button
               key={sort.value}
@@ -1169,10 +1169,10 @@ const useApi = (url) => {
         <h3 className="font-semibold text-gray-900 mb-3">Categories</h3>
         <div className="space-y-1">
           {[
-            { value: 'all', label: '📋 All Posts' },
-            { value: 'Technical Help', label: '🔧 Technical Help' },
-            { value: 'Project Showcase', label: '🎨 Projects' },
-            { value: 'Tutorials', label: '📚 Tutorials' }
+            { value: 'all', label: 'All Posts' },
+            { value: 'Technical Help', label: 'Technical Help' },
+            { value: 'Project Showcase', label: 'Projects' },
+            { value: 'Tutorials', label: 'Tutorials' }
           ].map((category) => (
             <button
               key={category.value}

@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 * {
@@ -9,4 +10,447 @@ body {
   line-height: normal;
   font-family: inherit;
   margin: unset;
+}
+
+/* OLED Dark Mode Styles */
+.oled-dark {
+  color-scheme: dark;
+}
+
+.oled-dark body {
+  background-color: #0f1419;
+  color: #e6e8eb;
+}
+
+.oled-dark .bg-gray-50 {
+  background-color: #0f1419 !important;
+}
+
+.oled-dark .bg-white {
+  background-color: #1a1f2e !important;
+}
+
+.oled-dark .bg-gray-900 {
+  background-color: #0a0e14 !important;
+}
+
+.oled-dark .text-gray-900 {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .text-gray-800 {
+  color: #e6e8eb !important;
+}
+
+.oled-dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+.oled-dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+.oled-dark .text-gray-500 {
+  color: #8b949e !important;
+}
+
+.oled-dark .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+.oled-dark .border-gray-200 {
+  border-color: #30363d !important;
+}
+
+.oled-dark .border-gray-300 {
+  border-color: #3d444d !important;
+}
+
+.oled-dark .bg-gray-100 {
+  background-color: #21262d !important;
+}
+
+.oled-dark .bg-gray-200 {
+  background-color: #30363d !important;
+}
+
+.oled-dark .bg-blue-50 {
+  background-color: #1e2a4a !important;
+}
+
+.oled-dark .bg-green-50 {
+  background-color: #1a2e1a !important;
+}
+
+.oled-dark .bg-purple-50 {
+  background-color: #2d1b34 !important;
+}
+
+.oled-dark .bg-yellow-50 {
+  background-color: #3d2f1f !important;
+}
+
+.oled-dark .text-blue-600 {
+  color: #58a6ff !important;
+}
+
+.oled-dark .text-green-600 {
+  color: #3fb950 !important;
+}
+
+.oled-dark .text-purple-600 {
+  color: #a5a3ff !important;
+}
+
+.oled-dark .text-yellow-600 {
+  color: #d29922 !important;
+}
+
+.oled-dark .hover\:bg-gray-50:hover {
+  background-color: #30363d !important;
+}
+
+.oled-dark .hover\:text-gray-900:hover {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.oled-dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Dark mode for styled cards */
+.oled-dark .card {
+  background: linear-gradient(135deg, rgba(26, 31, 46, 0.95) 0%, rgba(21, 26, 35, 0.95) 100%) !important;
+  border: 1px solid rgba(48, 54, 61, 0.5) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+.oled-dark .card .text {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .card .subtitle {
+  color: #9ca3af !important;
+}
+
+.oled-dark .card:hover {
+  background: linear-gradient(135deg, rgba(33, 38, 45, 1) 0%, rgba(26, 31, 46, 1) 100%) !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+.oled-dark .card:hover .text {
+  color: #ffffff !important;
+}
+
+.oled-dark .card:hover .subtitle {
+  color: #d1d5db !important;
+}
+
+/* Additional homepage dark mode overrides */
+.oled-dark .min-h-screen {
+  background-color: #0f1419 !important;
+}
+
+.oled-dark section {
+  background-color: #0f1419 !important;
+}
+
+.oled-dark .py-20 {
+  background-color: #0f1419 !important;
+}
+
+.oled-dark .rounded-xl,
+.oled-dark .rounded-2xl,
+.oled-dark .rounded-lg {
+  background-color: #1a1f2e !important;
+  border-color: #30363d !important;
+}
+
+.oled-dark h1,
+.oled-dark h2, 
+.oled-dark h3,
+.oled-dark h4,
+.oled-dark h5,
+.oled-dark h6 {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark p {
+  color: #9ca3af !important;
+}
+
+.oled-dark span {
+  color: #e6e8eb !important;
+}
+
+.oled-dark .text-center h1,
+.oled-dark .text-center h2,
+.oled-dark .text-center h3 {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .text-center p {
+  color: #9ca3af !important;
+}
+
+.oled-dark .bg-gradient-to-r {
+  background: linear-gradient(135deg, #1a1f2e 0%, #21262d 100%) !important;
+}
+
+.oled-dark .bg-gradient-to-br {
+  background: linear-gradient(135deg, #1a1f2e 0%, #21262d 100%) !important;
+}
+
+.oled-dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.oled-dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Header/Navbar Dark Mode Styles */
+.oled-dark header {
+  background-color: #161b22 !important;
+  border-bottom-color: #30363d !important;
+  box-shadow: 0 1px 0 rgba(48, 54, 61, 0.4) !important;
+}
+
+.oled-dark .bg-background {
+  background-color: #161b22 !important;
+}
+
+.oled-dark .border-border {
+  border-color: #30363d !important;
+}
+
+.oled-dark .text-primary {
+  color: #58a6ff !important;
+}
+
+.oled-dark .text-foreground {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .text-muted-foreground {
+  color: #8b949e !important;
+}
+
+.oled-dark .hover\:text-primary:hover {
+  color: #58a6ff !important;
+}
+
+.oled-dark .hover\:bg-muted:hover {
+  background-color: #30363d !important;
+}
+
+.oled-dark .bg-primary {
+  background-color: #0969da !important;
+}
+
+.oled-dark .text-primary-foreground {
+  color: #ffffff !important;
+}
+
+.oled-dark .bg-popover {
+  background-color: #21262d !important;
+}
+
+.oled-dark .text-popover-foreground {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .bg-secondary {
+  background-color: #30363d !important;
+}
+
+.oled-dark .bg-accent {
+  background-color: #0969da !important;
+}
+
+.oled-dark .bg-muted {
+  background-color: #30363d !important;
+}
+
+/* Light mode navigation styles */
+nav a {
+  background-color: transparent !important;
+}
+
+nav a:hover {
+  background-color: transparent !important;
+  color: var(--color-primary, #0969da) !important;
+}
+
+nav button {
+  background-color: transparent !important;
+}
+
+nav button:hover {
+  background-color: transparent !important;
+  color: var(--color-primary, #0969da) !important;
+}
+
+/* Override Tailwind hover states for navigation */
+.hover\:bg-muted:hover {
+  background-color: transparent !important;
+}
+
+/* Navigation specific styles */
+.oled-dark nav a {
+  color: #f0f2f5 !important;
+  background-color: transparent !important;
+}
+
+.oled-dark nav a:hover {
+  color: #58a6ff !important;
+  background-color: transparent !important;
+}
+
+.oled-dark nav button {
+  color: #f0f2f5 !important;
+  background-color: transparent !important;
+}
+
+.oled-dark nav button:hover {
+  color: #58a6ff !important;
+  background-color: transparent !important;
+}
+
+/* Override dark mode hover states for navigation */
+.oled-dark .hover\:bg-muted:hover {
+  background-color: transparent !important;
+}
+
+/* Logo and brand elements */
+.oled-dark .text-xl {
+  color: #58a6ff !important;
+}
+
+.oled-dark .text-xs {
+  color: #8b949e !important;
+}
+
+/* Mobile menu dark mode */
+.oled-dark .lg\:hidden {
+  background-color: #161b22 !important;
+  border-top-color: #30363d !important;
+}
+
+/* User dropdown and notifications */
+.oled-dark .academic-shadow,
+.oled-dark .academic-shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Achievement boxes dark mode */
+.oled-dark .bg-gradient-to-br {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-blue-600 {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-purple-600 {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-green-600 {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(5, 150, 105, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-orange-600 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-yellow-500 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(251, 191, 36, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+.oled-dark .from-purple-500 {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(236, 72, 153, 0.3)) !important;
+  transition: background 0.3s ease !important;
+}
+
+/* Hover effects to show light mode colors */
+.oled-dark .bg-gradient-to-br:hover {
+  background: linear-gradient(135deg, rgb(37, 99, 235), rgb(147, 51, 234)) !important;
+}
+
+.oled-dark .from-blue-600:hover {
+  background: linear-gradient(135deg, rgb(37, 99, 235), rgb(147, 51, 234)) !important;
+}
+
+.oled-dark .from-purple-600:hover {
+  background: linear-gradient(135deg, rgb(147, 51, 234), rgb(37, 99, 235)) !important;
+}
+
+.oled-dark .from-green-600:hover {
+  background: linear-gradient(135deg, rgb(22, 163, 74), rgb(5, 150, 105)) !important;
+}
+
+.oled-dark .from-orange-600:hover {
+  background: linear-gradient(135deg, rgb(234, 88, 12), rgb(217, 119, 6)) !important;
+}
+
+.oled-dark .from-yellow-500:hover {
+  background: linear-gradient(135deg, rgb(245, 158, 11), rgb(251, 191, 36)) !important;
+}
+
+.oled-dark .from-purple-500:hover {
+  background: linear-gradient(135deg, rgb(168, 85, 247), rgb(236, 72, 153)) !important;
+}
+
+/* Problems page dark mode */
+.oled-dark .bg-gradient-to-br.from-gray-900 {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #161b22 100%) !important;
+}
+
+.oled-dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.oled-dark .border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.oled-dark .bg-gray-50 {
+  background-color: #21262d !important;
+}
+
+.oled-dark .border-gray-300 {
+  border-color: #30363d !important;
+}
+
+.oled-dark .text-gray-700 {
+  color: #e6e8eb !important;
+}
+
+.oled-dark .text-gray-900 {
+  color: #f0f2f5 !important;
+}
+
+.oled-dark .hover\:border-blue-300:hover {
+  border-color: #58a6ff !important;
+}
+
+.oled-dark .group:hover .group-hover\:text-blue-600 {
+  color: #58a6ff !important;
+}
+
+/* Active nav items */
+.oled-dark .bg-primary.text-primary-foreground {
+  background-color: #0969da !important;
+  color: #ffffff !important;
 }

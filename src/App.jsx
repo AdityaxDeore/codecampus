@@ -1,9 +1,12 @@
 import React from "react";
 import Routes from "./Routes";
+import { DarkModeProvider } from "./contexts/DarkModeContext";
 
 function App() {
   return (
-    <Routes />
+    <DarkModeProvider>
+      <Routes />
+    </DarkModeProvider>
   );
 }
 
