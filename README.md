@@ -98,3 +98,8 @@ Build the application for production:
 npm run build
 ```
 
+Project by - 
+Aditya Deore
+Ved Jadhav
+Veerbhadra Mahant
+Sharvil Patil
