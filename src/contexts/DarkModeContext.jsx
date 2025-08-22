@@ -28,10 +28,12 @@ export const DarkModeProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     
-    // Apply OLED dark mode class to document
+    // Apply dark mode classes to document
     if (isDarkMode) {
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.add('oled-dark');
     } else {
+      document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('oled-dark');
     }
   }, [isDarkMode]);

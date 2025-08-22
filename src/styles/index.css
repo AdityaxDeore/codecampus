@@ -3,6 +3,13 @@ body {
   padding: 0;
   font-family: Inter;
   transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 * {
@@ -10,6 +17,20 @@ body {
   line-height: normal;
   font-family: inherit;
   margin: unset;
+}
+
+/* Responsive utilities */
+.w-full-vw {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+    linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 /* OLED Dark Mode Styles */
