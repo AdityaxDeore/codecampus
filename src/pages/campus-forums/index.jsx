@@ -404,7 +404,7 @@ const useApi = (url) => {
   useEffect(() => {
     setPosts(mockPosts);
     setFriendRequests(mockFriendRequests);
-  }, []);
+  }, [mockPosts, mockFriendRequests]);
 
   // Filter and sort posts
   const filteredAndSortedPosts = posts
@@ -1081,12 +1081,13 @@ const useApi = (url) => {
             <button 
               onClick={() => {
                 // Here you would handle the post creation logic
-                console.log('Creating post:', {
+                // Create new post with provided data
+                const newPost = {
                   type: createPostType,
                   text: postText,
                   images: selectedImages,
                   poll: createPostType === 'poll' ? { question: pollQuestion, options: pollOptions } : null
-                });
+                };
                 setShowCreateModal(false);
                 setPostText('');
                 setSelectedImages([]);
@@ -1199,7 +1200,7 @@ const useApi = (url) => {
 
     const handleTweetSubmit = () => {
       if (newTweet.trim() && newTweet.length <= maxTweetLength) {
-        console.log('New tweet:', newTweet);
+        // Submit new tweet
         setNewTweet('');
         setTweetLength(0);
       }
@@ -1324,7 +1325,7 @@ const useApi = (url) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log('Reply to post', post.id);
+                        // Handle reply to post
                       }}
                       className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 hover:bg-blue-50 px-3 py-2 rounded-full transition-colors"
                     >
@@ -1335,7 +1336,7 @@ const useApi = (url) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log('Retweet post', post.id);
+                        // Handle retweet post
                       }}
                       className={`flex items-center space-x-2 hover:bg-green-50 px-3 py-2 rounded-full transition-colors ${
                         post.isRetweeted ? 'text-green-500' : 'text-gray-500 hover:text-green-500'
@@ -1348,7 +1349,7 @@ const useApi = (url) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log('Like post', post.id);
+                        // Handle like post
                       }}
                       className={`flex items-center space-x-2 hover:bg-red-50 px-3 py-2 rounded-full transition-colors ${
                         post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
@@ -1361,7 +1362,7 @@ const useApi = (url) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log('Share post', post.id);
+                        // Handle share post
                       }}
                       className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 hover:bg-blue-50 px-3 py-2 rounded-full transition-colors"
                     >

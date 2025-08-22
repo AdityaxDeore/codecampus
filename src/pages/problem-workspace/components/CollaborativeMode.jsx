@@ -6,6 +6,7 @@ import Input from '../../../components/ui/Input';
 const CollaborativeMode = ({ isActive, onToggle, onInviteUser }) => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [isInviting, setIsInviting] = useState(false);
+  const [error, setError] = useState('');
 
   const activeCollaborators = [
     {
@@ -36,7 +37,8 @@ const CollaborativeMode = ({ isActive, onToggle, onInviteUser }) => {
       await onInviteUser(inviteEmail);
       setInviteEmail('');
     } catch (error) {
-      console.error('Failed to invite user:', error);
+      // Handle invitation error
+      setError('Failed to invite user. Please try again.');
     } finally {
       setIsInviting(false);
     }

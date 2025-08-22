@@ -108,7 +108,7 @@ const Login = () => {
     
     try {
       // Here you would typically send the data to your backend
-      console.log(`${authMode} attempt with:`, formData);
+      // Process authentication with provided form data
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));

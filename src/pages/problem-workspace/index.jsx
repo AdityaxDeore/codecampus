@@ -274,7 +274,6 @@ const ProblemWorkspace = () => {
   };
 
   const handleViewSubmission = (submission) => {
-    console.log('Viewing submission:', submission);
     // Implementation for viewing submission code
   };
 
@@ -282,7 +281,7 @@ const ProblemWorkspace = () => {
     // Simulate invite API call
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log('Invited user:', email);
+        // User invited successfully
         resolve();
       }, 1000);
     });
