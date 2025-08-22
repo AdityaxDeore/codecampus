@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { signOut as supaSignOut } from '../../utils/auth';
+import { signOut } from '../../utils/auth';
 import Icon from '../AppIcon';
 import DarkModeToggle from './DarkModeToggle';
 
@@ -154,7 +154,22 @@ const Header = () => {
                   <span>Settings</span>
                 </Link>
                 <hr className="my-2 border-border" />
-                <button onClick={async () => { try { await supaSignOut(); } catch (e) {} navigate('/login'); }} className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition w-full text-left">
+                <button 
+                  onClick={async () => { 
+                    try { 
+                      await signOut(); 
+                      // Clear local storage
+                      localStorage.removeItem('isAuthenticated');
+                      localStorage.removeItem('userEmail');
+                      localStorage.removeItem('userName');
+                      localStorage.removeItem('loginMethod');
+                    } catch (e) {
+                      console.error('Sign out error:', e);
+                    } 
+                    navigate('/login'); 
+                  }} 
+                  className="flex items-center space-x-3 px-4 py-2 text-sm text-popover-foreground hover:bg-muted academic-transition w-full text-left"
+                >
                   <Icon name="LogOut" size={16} />
                   <span>Sign Out</span>
                 </button>

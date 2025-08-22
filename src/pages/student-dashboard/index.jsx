@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
-import { getSession } from '../../utils/auth';
+import { getSession, getCurrentUser, onAuthStateChange } from '../../utils/auth';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -13,14 +13,27 @@ const StudentDashboard = () => {
   const [loginMethod, setLoginMethod] = useState('');
 
   useEffect(() => {
-    (async () => {
-      // Prefer Supabase session
-      const session = await getSession();
-      if (session?.user) {
-        setUserEmail(session.user.email || '');
-        setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
-        setLoginMethod(session.user.app_metadata?.provider || '');
+    const checkAuthentication = async () => {
+      // Try Firebase authentication first
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        setUserEmail(currentUser.email || '');
+        setUserName(currentUser.displayName || currentUser.email?.split('@')[0] || '');
+        setLoginMethod('firebase');
         return;
+      }
+
+      // Try Supabase session
+      try {
+        const session = await getSession();
+        if (session?.user) {
+          setUserEmail(session.user.email || '');
+          setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
+          setLoginMethod(session.user.app_metadata?.provider || 'supabase');
+          return;
+        }
+      } catch (error) {
+        console.error('Supabase session check failed:', error);
       }
 
       // Fallback to local storage (legacy)
@@ -31,8 +44,28 @@ const StudentDashboard = () => {
       }
       setUserEmail(localStorage.getItem('userEmail') || '');
       setUserName(localStorage.getItem('userName') || '');
-      setLoginMethod(localStorage.getItem('loginMethod') || '');
-    })();
+      setLoginMethod(localStorage.getItem('loginMethod') || 'legacy');
+    };
+
+    checkAuthentication();
+
+    // Listen for auth state changes
+    const unsubscribe = onAuthStateChange((user) => {
+      if (user) {
+        setUserEmail(user.email || '');
+        setUserName(user.displayName || user.email?.split('@')[0] || '');
+        setLoginMethod('firebase');
+      } else {
+        // User logged out, redirect to login
+        navigate('/login');
+      }
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, [navigate]);
 
   // Mock dashboard data

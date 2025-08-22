@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
+import ProtectedRoute from "components/ProtectedRoute";
 import NotFound from "pages/NotFound";
 import CampusForums from './pages/campus-forums';
 import AchievementCenter from './pages/achievement-center';
@@ -24,41 +25,48 @@ const Routes = () => {
       <ErrorBoundary>
       <ScrollToTop />
       <RouterRoutes>
-        {/* Define your route here */}
+        {/* Public routes */}
         <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route path="/campus-forums" element={<CampusForums />} />
-        <Route path="/achievement-center" element={<AchievementCenter />} />
-        <Route path="/problems" element={<Problems />} />
-        <Route path="/learning-pathways" element={<LearningPathways />} />
-        <Route path="/goals-homework" element={<GoalsHomework />} />
-        <Route path="/problem-workspace" element={<ProblemWorkspace />} />
-        <Route path="/problem-history" element={<ProblemHistory />} />
-        <Route path="/about-code-campus" element={<AboutCodeCampus />} />
         <Route path="/homepage" element={<Homepage />} />
-  {/* Placeholder routes */}
-  <Route path="/settings" element={<ComingSoon />} />
-  <Route path="/help" element={<ComingSoon />} />
-  <Route path="/profile" element={<ComingSoon />} />
-  <Route path="/projects" element={<Projects />} />
-  <Route path="/success-stories" element={<ComingSoon />} />
-  <Route path="/events" element={<ComingSoon />} />
-  <Route path="/study-groups" element={<ComingSoon />} />
-  <Route path="/mentorship" element={<ComingSoon />} />
-  <Route path="/blog" element={<ComingSoon />} />
-  <Route path="/getting-started" element={<ComingSoon />} />
-  <Route path="/docs" element={<ComingSoon />} />
-  <Route path="/api" element={<ComingSoon />} />
-  <Route path="/tutorials" element={<ComingSoon />} />
-  <Route path="/careers" element={<ComingSoon />} />
-  <Route path="/press" element={<ComingSoon />} />
-  <Route path="/partners" element={<ComingSoon />} />
-  <Route path="/contact" element={<ComingSoon />} />
-  <Route path="/privacy" element={<ComingSoon />} />
-  <Route path="/terms" element={<ComingSoon />} />
-  <Route path="/cookies" element={<ComingSoon />} />
-  <Route path="/status" element={<StatusPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/about-code-campus" element={<AboutCodeCampus />} />
+        <Route path="/status" element={<StatusPage />} />
+        
+        {/* Protected routes */}
+        <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/campus-forums" element={<ProtectedRoute><CampusForums /></ProtectedRoute>} />
+        <Route path="/achievement-center" element={<ProtectedRoute><AchievementCenter /></ProtectedRoute>} />
+        <Route path="/problems" element={<ProtectedRoute><Problems /></ProtectedRoute>} />
+        <Route path="/learning-pathways" element={<ProtectedRoute><LearningPathways /></ProtectedRoute>} />
+        <Route path="/goals-homework" element={<ProtectedRoute><GoalsHomework /></ProtectedRoute>} />
+        <Route path="/problem-workspace" element={<ProtectedRoute><ProblemWorkspace /></ProtectedRoute>} />
+        <Route path="/problem-history" element={<ProtectedRoute><ProblemHistory /></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
+        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        
+        {/* Placeholder routes - Protected */}
+        <Route path="/settings" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/help" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/success-stories" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/events" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/study-groups" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/mentorship" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/tutorials" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        
+        {/* Public placeholder routes */}
+        <Route path="/blog" element={<ComingSoon />} />
+        <Route path="/getting-started" element={<ComingSoon />} />
+        <Route path="/docs" element={<ComingSoon />} />
+        <Route path="/api" element={<ComingSoon />} />
+        <Route path="/careers" element={<ComingSoon />} />
+        <Route path="/press" element={<ComingSoon />} />
+        <Route path="/partners" element={<ComingSoon />} />
+        <Route path="/contact" element={<ComingSoon />} />
+        <Route path="/privacy" element={<ComingSoon />} />
+        <Route path="/terms" element={<ComingSoon />} />
+        <Route path="/cookies" element={<ComingSoon />} />
+        
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>

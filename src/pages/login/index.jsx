@@ -1,42 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Select from '../../components/ui/Select';
-import { signInWithGoogle, signInWithMicrosoft } from '../../utils/auth';
+import { signInWithEmail, signUpWithEmail, onAuthStateChange } from '../../utils/auth';
+import { trackLogin } from '../../lib/analytics';
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [activeTab, setActiveTab] = useState('manual'); // 'manual' or 'oauth'
-  const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'signin'
+  const [isSignUp, setIsSignUp] = useState(false);
   
-  // Form state for manual login/signup
+  // Form state for login/signup
   const [formData, setFormData] = useState({
     email: '',
-    name: '',
-    branch: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    fullName: ''
   });
 
-  // Branch options
-  const branchOptions = [
-    { value: '', label: 'Select Branch' },
-    { value: 'computer-engineering', label: 'Computer Engineering' },
-    { value: 'information-technology', label: 'Information Technology' },
-    { value: 'electronics-telecom', label: 'Electronics & Telecommunication' },
-    { value: 'mechanical-engineering', label: 'Mechanical Engineering' },
-    { value: 'civil-engineering', label: 'Civil Engineering' },
-    { value: 'electrical-engineering', label: 'Electrical Engineering' },
-    { value: 'instrumentation-control', label: 'Instrumentation & Control' },
-    { value: 'automobile-engineering', label: 'Automobile Engineering' },
-    { value: 'artificial-intelligence', label: 'Artificial Intelligence & Data Science' },
-    { value: 'other', label: 'Other' }
-  ];
+  // Check if user is already authenticated
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((user) => {
+      if (user) {
+        // User is already logged in, redirect to dashboard
+        navigate('/student-dashboard');
+      }
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,107 +54,100 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Email/PRN/Roll No is required';
-    } else if (!formData.email.includes('@') && !/^[0-9]+$/.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email or PRN/Roll No';
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
-    
-    if (authMode === 'signup') {
-      if (!formData.name.trim()) {
-        newErrors.name = 'Name is required';
-      } else if (formData.name.trim().length < 2) {
-        newErrors.name = 'Name must be at least 2 characters';
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (isSignUp) {
+      if (!formData.fullName.trim()) {
+        newErrors.fullName = 'Full name is required';
       }
-      
-      if (!formData.branch) {
-        newErrors.branch = 'Please select your branch';
-      }
-      
-      if (!formData.password) {
-        newErrors.password = 'Password is required';
-      } else if (formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters';
-      }
-      
+
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = 'Please confirm your password';
       } else if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
       }
-    } else {
-      // Sign in only requires email and password
-      if (!formData.password) {
-        newErrors.password = 'Password is required';
-      }
     }
-    
-    return newErrors;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleManualLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setErrors({});
     
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setIsLoading(false);
+    if (!validateForm()) {
       return;
     }
-    
+
+    setIsLoading(true);
+    setErrors({});
+
     try {
-      // Here you would typically send the data to your backend
-      // Process authentication with provided form data
+      let result;
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (isSignUp) {
+        // Sign up with Firebase
+        result = await signUpWithEmail(formData.email, formData.password, {
+          full_name: formData.fullName
+        });
+      } else {
+        // Sign in with Firebase
+        result = await signInWithEmail(formData.email, formData.password);
+      }
       
-      // For now, just navigate to dashboard
-      navigate('/student-dashboard');
+      const { user, error } = result;
+      
+      if (error) {
+        // Handle Firebase authentication errors
+        let errorMessage = isSignUp ? 'Sign up failed. Please try again.' : 'Sign in failed. Please try again.';
+        
+        if (error.includes('email-already-in-use')) {
+          errorMessage = 'An account with this email already exists.';
+        } else if (error.includes('user-not-found')) {
+          errorMessage = 'No account found with this email address.';
+        } else if (error.includes('wrong-password')) {
+          errorMessage = 'Incorrect password. Please try again.';
+        } else if (error.includes('invalid-email')) {
+          errorMessage = 'Invalid email address format.';
+        } else if (error.includes('weak-password')) {
+          errorMessage = 'Password is too weak. Please choose a stronger password.';
+        } else if (error.includes('too-many-requests')) {
+          errorMessage = 'Too many failed attempts. Please try again later.';
+        } else if (error.includes('user-disabled')) {
+          errorMessage = 'This account has been disabled. Contact support.';
+        }
+        
+        setErrors({ general: errorMessage });
+        return;
+      }
+
+      if (user) {
+        // Track successful login/signup
+        trackLogin(isSignUp ? 'signup_email' : 'signin_email');
+        
+        // Store user data in localStorage (for backward compatibility)
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userEmail', user.email || '');
+        localStorage.setItem('userName', user.displayName || formData.fullName || '');
+        localStorage.setItem('loginMethod', 'firebase');
+        
+        // Navigate to dashboard
+        navigate('/student-dashboard');
+      }
     } catch (error) {
-      setErrors({ general: `${authMode === 'signup' ? 'Sign up' : 'Sign in'} failed. Please try again.` });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAuthModeChange = (mode) => {
-    setAuthMode(mode);
-    setErrors({});
-    // Clear form data when switching modes
-    setFormData({
-      email: '',
-      name: '',
-      branch: '',
-      password: '',
-      confirmPassword: ''
-    });
-  };
-
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    setErrors({});
-    try {
-      const { provider } = await signInWithGoogle();
-      if (provider) navigate('/student-dashboard');
-    } catch (e) {
-      setErrors({ google: 'Google login failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleMicrosoftLogin = async () => {
-    setIsLoading(true);
-    setErrors({});
-    try {
-      const { provider } = await signInWithMicrosoft();
-      if (provider) navigate('/student-dashboard');
-    } catch (e) {
-      setErrors({ microsoft: 'Microsoft login failed. Please try again.' });
+      console.error('Authentication error:', error);
+      setErrors({ general: 'An unexpected error occurred. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -164,14 +156,21 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Login - CodeCampus</title>
-        <meta name="description" content="Login to CodeCampus with your college email address" />
+        <title>{isSignUp ? 'Sign Up' : 'Login'} - CodeCampus</title>
+        <meta name="description" content={isSignUp ? "Create your CodeCampus account" : "Sign in to CodeCampus with your email address"} />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 flex items-center justify-center relative overflow-hidden">
+        {/* Grid Background Pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         
-        <div className="relative w-full max-w-md mx-4">
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-emerald-500/20 rounded-full animate-pulse delay-700"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-purple-500/20 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute top-1/3 right-1/3 w-24 h-24 bg-pink-500/20 rounded-full animate-pulse delay-500"></div>
+        
+        <div className="relative w-full max-w-md mx-4 z-10">
           <div className="text-center mb-8">
             <a href="/homepage" className="inline-flex items-center space-x-3 mb-6">
               <div className="relative">
@@ -183,318 +182,208 @@ const Login = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   className="academic-transition hover:scale-105"
                 >
-                  <rect width="32" height="32" rx="8" fill="var(--color-primary)" />
+                  <rect width="32" height="32" rx="8" fill="#3B82F6" />
                   <path d="M8 12L16 8L24 12V20C24 21.1046 23.1046 22 22 22H10C8.89543 22 8 21.1046 8 20V12Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M12 16L16 14L20 16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-primary">CodeCampus</h1>
+                <h1 className="text-2xl font-bold text-white">CodeCampus</h1>
               </div>
             </a>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {authMode === 'signup' ? 'Create Account' : 'Welcome Back'}
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {isSignUp ? 'Join CodeCampus' : 'Welcome Back'}
             </h2>
-            <p className="text-gray-600">
-              {authMode === 'signup' 
-                ? 'Join CodeCampus with your college details' 
-                : 'Sign in to your CodeCampus account'
-              }
+            <p className="text-gray-300">
+              {isSignUp ? 'Create your account and start your coding journey' : 'Sign in to your CodeCampus account'}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-            {/* Tab Navigation */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 p-8">
+            {/* Toggle between Sign In and Sign Up */}
             <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setActiveTab('manual')}
+                type="button"
+                onClick={() => {
+                  setIsSignUp(false);
+                  setErrors({});
+                  setFormData({ email: '', password: '', confirmPassword: '', fullName: '' });
+                }}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'manual'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  !isSignUp 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                Manual {authMode === 'signup' ? 'Sign Up' : 'Sign In'}
+                Sign In
               </button>
               <button
-                onClick={() => setActiveTab('oauth')}
+                type="button"
+                onClick={() => {
+                  setIsSignUp(true);
+                  setErrors({});
+                  setFormData({ email: '', password: '', confirmPassword: '', fullName: '' });
+                }}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'oauth'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  isSignUp 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                OAuth Login
+                Sign Up
               </button>
             </div>
 
-            {/* Sign Up / Sign In Toggle for Manual Tab */}
-            {activeTab === 'manual' && (
-              <div className="flex mb-6 bg-blue-50 rounded-lg p-1">
-                <button
-                  onClick={() => handleAuthModeChange('signup')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                    authMode === 'signup'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-blue-600 hover:text-blue-800'
-                  }`}
-                >
-                  Sign Up
-                </button>
-                <button
-                  onClick={() => handleAuthModeChange('signin')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                    authMode === 'signin'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-blue-600 hover:text-blue-800'
-                  }`}
-                >
-                  Sign In
-                </button>
-              </div>
-            )}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {errors.general && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm flex items-center space-x-1">
+                    <Icon name="AlertCircle" size={14} />
+                    <span>{errors.general}</span>
+                  </p>
+                </div>
+              )}
 
-            {/* Manual Login Form */}
-            {activeTab === 'manual' && (
-              <form onSubmit={handleManualLogin} className="space-y-4">
-                {errors.general && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-red-600 text-sm flex items-center space-x-1">
-                      <Icon name="AlertCircle" size={14} />
-                      <span>{errors.general}</span>
-                    </p>
-                  </div>
-                )}
-
+              {isSignUp && (
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email / PRN / Roll No
+                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
                   </label>
                   <Input
-                    id="email"
-                    name="email"
+                    id="fullName"
+                    name="fullName"
                     type="text"
-                    value={formData.email}
+                    value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="Enter your email, PRN, or roll number"
-                    className={errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+                    placeholder="Enter your full name"
+                    className={errors.fullName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
                   />
-                  {errors.email && (
+                  {errors.fullName && (
                     <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
                       <Icon name="AlertCircle" size={12} />
-                      <span>{errors.email}</span>
+                      <span>{errors.fullName}</span>
                     </p>
                   )}
                 </div>
+              )}
 
-                {authMode === 'signup' && (
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter your email address"
+                  className={errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
+                    <Icon name="AlertCircle" size={12} />
+                    <span>{errors.email}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Enter your password"
+                  className={errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+                />
+                {errors.password && (
+                  <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
+                    <Icon name="AlertCircle" size={12} />
+                    <span>{errors.password}</span>
+                  </p>
+                )}
+              </div>
+
+              {isSignUp && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="Confirm your password"
+                    className={errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
+                      <Icon name="AlertCircle" size={12} />
+                      <span>{errors.confirmPassword}</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                variant="default"
+                size="lg"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>{isSignUp ? 'Creating Account...' : 'Signing In...'}</span>
+                  </div>
+                ) : (
+                  isSignUp ? 'Create Account' : 'Sign In'
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                {isSignUp ? (
                   <>
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="Enter your full name"
-                        className={errors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
-                      />
-                      {errors.name && (
-                        <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
-                          <Icon name="AlertCircle" size={12} />
-                          <span>{errors.name}</span>
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="branch" className="block text-sm font-medium text-gray-700 mb-2">
-                        Branch
-                      </label>
-                      <Select
-                        id="branch"
-                        name="branch"
-                        value={formData.branch}
-                        onChange={handleInputChange}
-                        options={branchOptions}
-                        className={errors.branch ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
-                      />
-                      {errors.branch && (
-                        <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
-                          <Icon name="AlertCircle" size={12} />
-                          <span>{errors.branch}</span>
-                        </p>
-                      )}
-                    </div>
+                    Already have an account?{' '}
+                    <button 
+                      onClick={() => {
+                        setIsSignUp(false);
+                        setErrors({});
+                        setFormData({ email: '', password: '', confirmPassword: '', fullName: '' });
+                      }}
+                      className="text-blue-600 hover:text-blue-500 font-medium"
+                    >
+                      Sign in here
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Need help?{' '}
+                    <a href="/contact" className="text-blue-600 hover:text-blue-500 font-medium">
+                      Contact Support
+                    </a>
                   </>
                 )}
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Enter your password"
-                    className={errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
-                  />
-                  {errors.password && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
-                      <Icon name="AlertCircle" size={12} />
-                      <span>{errors.password}</span>
-                    </p>
-                  )}
-                </div>
-
-                {authMode === 'signup' && (
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                      Confirm Password
-                    </label>
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Confirm your password"
-                      className={errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
-                    />
-                    {errors.confirmPassword && (
-                      <p className="text-red-600 text-sm mt-1 flex items-center space-x-1">
-                        <Icon name="AlertCircle" size={12} />
-                        <span>{errors.confirmPassword}</span>
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  size="lg"
-                  className="w-full mt-6"
-                >
-                  {isLoading 
-                    ? (authMode === 'signup' ? 'Creating Account...' : 'Signing In...') 
-                    : (authMode === 'signup' ? 'Create Account' : 'Sign In')
-                  }
-                </Button>
-              </form>
-            )}
-
-            {/* OAuth Login */}
-            {activeTab === 'oauth' && (
-              <div className="space-y-4">
-                <div>
-                  <Button
-                    onClick={handleGoogleLogin}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="lg"
-                    className="w-full flex items-center justify-center space-x-3 py-3"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                    <span>{isLoading ? 'Signing in...' : 'Continue with Google'}</span>
-                  </Button>
-                  {errors.google && (
-                    <p className="text-red-600 text-sm mt-2 flex items-center space-x-1">
-                      <Icon name="AlertCircle" size={14} />
-                      <span>{errors.google}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Button
-                    onClick={handleMicrosoftLogin}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="lg"
-                    className="w-full flex items-center justify-center space-x-3 py-3"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                      <path fill="#F25022" d="M1 1h10v10H1z" />
-                      <path fill="#00A4EF" d="M13 1h10v10H13z" />
-                      <path fill="#7FBA00" d="M1 13h10v10H1z" />
-                      <path fill="#FFB900" d="M13 13h10v10H13z" />
-                    </svg>
-                    <span>{isLoading ? 'Signing in...' : 'Continue with Microsoft'}</span>
-                  </Button>
-                  {errors.microsoft && (
-                    <p className="text-red-600 text-sm mt-2 flex items-center space-x-1">
-                      <Icon name="AlertCircle" size={14} />
-                      <span>{errors.microsoft}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'manual' && (
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <div className="flex items-start space-x-2">
-                  <Icon name="Info" size={16} className="text-blue-600 mt-0.5" />
-                  <div>
-                    <h4 className="text-sm font-medium text-blue-900 mb-1">
-                      {authMode === 'signup' ? 'Create Your Account' : 'Welcome Back'}
-                    </h4>
-                    <p className="text-xs text-blue-700">
-                      {authMode === 'signup' 
-                        ? 'Enter your college details to join CodeCampus and start your coding journey.'
-                        : 'Sign in with your existing credentials to continue learning.'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'oauth' && (
-              <>
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <div className="flex items-start space-x-2">
-                    <Icon name="Shield" size={16} className="text-blue-600 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-medium text-blue-900 mb-1">Secure College Login</h4>
-                      <p className="text-xs text-blue-700">
-                        We verify your educational institution via your OAuth provider. Use your college account.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                  <h4 className="text-sm font-medium text-green-900 mb-2">Supported Institutions:</h4>
-                  <div className="text-xs text-green-700 space-y-1">
-                    <p>• Universities with .edu domains</p>
-                    <p>• International academic institutions (.ac.uk, .ac.in, etc.)</p>
-                    <p>• PCCOE Pune and partner colleges</p>
-                    <p>• Google Workspace for Education and Azure AD tenants</p>
-                  </div>
-                </div>
-              </>
-            )}
+              </p>
+            </div>
           </div>
 
-          <div className="text-center mt-8">
-            <p className="text-xs text-gray-500">
-              By {authMode === 'signup' ? 'creating an account' : 'signing in'}, you agree to our{' '}
-              <a href="/terms" className="text-blue-600 hover:text-blue-500">Terms of Service</a>
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-400">
+              By signing in, you agree to our{' '}
+              <a href="/terms" className="text-gray-300 hover:text-white">Terms of Service</a>
               {' '}and{' '}
-              <a href="/privacy" className="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+              <a href="/privacy" className="text-gray-300 hover:text-white">Privacy Policy</a>
             </p>
           </div>
         </div>
