@@ -16,7 +16,7 @@ A collaborative learning platform for computer science students, combining acade
 - **Vite** for optimized builds and fast development
 - **TailwindCSS** for responsive design
 - **Firebase** for authentication and real-time features
-- **Supabase** for database and backend services
+- **Firestore** for database and backend services
 - **Framer Motion** for smooth animations
 
 ## 🛠️ Development
