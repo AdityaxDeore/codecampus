@@ -24,17 +24,13 @@ const StudentDashboard = () => {
         return;
       }
 
-      // Try Supabase session
-      try {
-        const session = await getSession();
-        if (session?.user) {
-          setUserEmail(session.user.email || '');
-          setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
-          setLoginMethod(session.user.app_metadata?.provider || 'supabase');
-          return;
-        }
-      } catch (error) {
-        console.error('Supabase session check failed:', error);
+      // Check current session
+      const session = await getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email || '');
+        setUserName(session.user.displayName || session.user.email?.split('@')[0] || '');
+        setLoginMethod('firebase');
+        return;
       }
 
       // Fallback to local storage (legacy)

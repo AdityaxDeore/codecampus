@@ -11,7 +11,7 @@ flowchart TD
   G --> H(V3: Cloud Code Runner + Sandbox)
 
   subgraph Stack
-    S1[Supabase Auth/DB/Storage]
+    S1[Firebase Auth/Firestore/Storage]
     S2[Edge Functions]
     S3[Realtime]
     S4[Judge0/Piston]
@@ -22,7 +22,7 @@ flowchart TD
 ## Milestones
 
 - V1 Foundation
-  - Project setup, envs, Supabase client, schema, RLS
+  - Project setup, envs, Firebase config, schema, security rules
   - Minimal UI wiring (login, profile fetch)
 
 - V1.1 Auth + Profiles

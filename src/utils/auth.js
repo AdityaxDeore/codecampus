@@ -28,20 +28,9 @@ export async function getSession() {
 }
 
 export async function getCurrentUser() {
-  if (AUTH_PROVIDER === 'firebase') {
-    return firebaseGetCurrentUser();
-  }
-  
-  const session = await getSession();
-  return session?.user || null;
+  return firebaseGetCurrentUser();
 }
 
 export function onAuthStateChange(callback) {
-  if (AUTH_PROVIDER === 'firebase') {
-    return firebaseOnAuthStateChange(callback);
-  }
-  
-  return supabase.auth.onAuthStateChange((event, session) => {
-    callback(session?.user || null);
-  });
+  return firebaseOnAuthStateChange(callback);
 }

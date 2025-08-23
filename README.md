@@ -40,7 +40,7 @@ codecampus/
 │   ├── components/     # Common UI components
 │   ├── shared/        # Shared components and data
 │   ├── pages/         # Page components
-│   ├── lib/           # Firebase and Supabase setup
+│   ├── lib/           # Firebase setup and utilities
 │   ├── utils/         # Helper functions
 │   └── styles/        # Global styles and Tailwind
 ```
