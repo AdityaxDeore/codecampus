@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import ActivityFeed from '../../shared/components/ActivityFeed';
 import { getSession, getCurrentUser, onAuthStateChange } from '../../utils/auth';
 
 const StudentDashboard = () => {
@@ -106,32 +107,41 @@ const StudentDashboard = () => {
 
   const recentActivity = [
     {
+      id: 1,
       type: 'problem_solved',
-      title: 'Solved "Two Sum" problem',
+      user: userName,
+      action: 'solved',
+      target: 'Two Sum problem',
+      difficulty: 'Easy',
       time: '2 hours ago',
-      icon: 'CheckCircle',
-      color: 'green'
+      points: 50
     },
     {
+      id: 2,
       type: 'forum_post',
-      title: 'Posted in "Data Structures" forum',
+      user: userName,
+      action: 'posted in',
+      target: 'Data Structures Forum',
       time: '5 hours ago',
-      icon: 'MessageSquare',
-      color: 'blue'
+      replies: 3
     },
     {
+      id: 3,
       type: 'achievement',
-      title: 'Earned "Problem Solver" badge',
+      user: userName,
+      action: 'earned',
+      target: 'Problem Solver Badge',
       time: '1 day ago',
-      icon: 'Award',
-      color: 'yellow'
+      streak: 7
     },
     {
+      id: 4,
       type: 'collaboration',
-      title: 'Joined group project "Campus Events App"',
+      user: userName,
+      action: 'joined project',
+      target: 'Campus Events App',
       time: '2 days ago',
-      icon: 'Users',
-      color: 'purple'
+      collaborators: 4
     }
   ];
 
@@ -264,21 +274,13 @@ const StudentDashboard = () => {
                 </div>
 
                 {/* Recent Activity */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
-                  <div className="space-y-4">
-                    {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-${activity.color}-100`}>
-                          <Icon name={activity.icon} size={16} className={`text-${activity.color}-600`} />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                          <p className="text-xs text-gray-600">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="space-y-4">
+                  <ActivityFeed 
+                    activities={recentActivity}
+                    variant="dashboard"
+                    maxItems={4}
+                    title="Recent Activity"
+                  />
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <Link to="/status" className="block">
                       <Button variant="outline" size="sm" className="w-full">

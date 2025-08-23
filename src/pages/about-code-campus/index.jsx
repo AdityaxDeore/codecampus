@@ -1,13 +1,13 @@
 import React from 'react';
 import Header from '../../components/ui/Header';
-import HeroSection from './components/HeroSection';
+import HeroSection from '../../shared/components/HeroSection';
 import MissionSection from './components/MissionSection';
 import TimelineSection from './components/TimelineSection';
-import ValuePropositionSection from './components/ValuePropositionSection';
-import TeamSection from './components/TeamSection';
-import UniversityPartnerships from './components/UniversityPartnerships';
-import StatsSection from './components/StatsSection';
-import TestimonialsSection from './components/TestimonialsSection';
+import ValueProposition from '../../shared/components/ValueProposition';
+import TeamSection from '../../shared/components/TeamSection';
+import UniversityPartnerships from '../../shared/components/UniversityPartnerships';
+import StatsSection from '../../shared/components/StatsSection';
+import TestimonialSection from '../../shared/components/TestimonialSection';
 import Icon from '../../components/AppIcon';
 
 const AboutCodeCampus = () => {
@@ -16,7 +16,7 @@ const AboutCodeCampus = () => {
       <Header />
       <main className="pt-16">
         {/* Hero Section */}
-        <HeroSection />
+        <HeroSection variant="about" />
 
         {/* Mission Section */}
         <MissionSection />
@@ -25,19 +25,19 @@ const AboutCodeCampus = () => {
         <TimelineSection />
 
         {/* Value Proposition */}
-        <ValuePropositionSection />
+        <ValueProposition variant="about" />
 
         {/* Team Section */}
-        <TeamSection />
+        <TeamSection variant="about" />
 
         {/* University Partnerships */}
-        <UniversityPartnerships />
+        <UniversityPartnerships variant="about" />
 
         {/* Stats Section */}
-        <StatsSection />
+        <StatsSection variant="about" />
 
         {/* Testimonials */}
-        <TestimonialsSection />
+        <TestimonialSection variant="about" />
 
         {/* Call to Action Section */}
         <section className="py-20 bg-gradient-to-r from-primary to-secondary">

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import ForumPost from './ForumPost';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Select from '../../../components/ui/Select';
+import ActivityFeed from '../../../shared/components/ActivityFeed';
 
 const ForumFeed = ({ posts, searchQuery, filters, onPostAction }) => {
   const [sortBy, setSortBy] = useState('recent');
@@ -21,62 +21,72 @@ const ForumFeed = ({ posts, searchQuery, filters, onPostAction }) => {
     { value: 'discussions', label: 'Discussions Only' }
   ];
 
-  const filteredAndSortedPosts = useMemo(() => {
-    let filtered = posts;
+  // Transform and filter posts based on current view settings
+  const transformedAndFilteredPosts = useMemo(() => {
+    // First transform the posts into activity feed format
+    const transformedPosts = posts?.map(post => ({
+      id: post.id,
+      type: post.isQuestion ? 'question' : 'forum_post',
+      user: post.author.name,
+      avatar: post.author.avatar,
+      university: post.author.university,
+      verified: post.author.verified,
+      action: post.isQuestion ? 'asked' : 'posted',
+      target: post.title || post.content,
+      time: post.timestamp,
+      likes: post.upvotes - post.downvotes,
+      replies: post.replies?.length,
+      tags: post.tags,
+      category: post.category
+    })) || [];
+
+    let filtered = transformedPosts;
 
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered?.filter(post =>
-        post?.title?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
-        post?.content?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
-        post?.tags?.some(tag => tag?.toLowerCase()?.includes(searchQuery?.toLowerCase())) ||
-        post?.author?.name?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+      filtered = filtered.filter(post =>
+        post.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
     // Apply category filter
     if (filters?.category && filters?.category !== 'all') {
-      filtered = filtered?.filter(post => post?.category === filters?.category);
-    }
-
-    // Apply branch filter
-    if (filters?.branch && filters?.branch !== 'all') {
-      filtered = filtered?.filter(post => post?.author?.branch?.toLowerCase()?.includes(filters?.branch?.replace('-', ' ')));
+      filtered = filtered.filter(post => post.category === filters.category);
     }
 
     // Apply view mode filter
     if (viewMode === 'questions') {
-      filtered = filtered?.filter(post => post?.isQuestion);
+      filtered = filtered.filter(post => post.type === 'question');
     } else if (viewMode === 'discussions') {
-      filtered = filtered?.filter(post => !post?.isQuestion);
+      filtered = filtered.filter(post => post.type === 'forum_post');
     }
 
     // Apply sorting
     switch (sortBy) {
       case 'popular':
-        filtered?.sort((a, b) => (b?.upvotes - b?.downvotes) - (a?.upvotes - a?.downvotes));
+        filtered.sort((a, b) => b.likes - a.likes);
         break;
       case 'trending':
-        filtered?.sort((a, b) => {
-          const aScore = (a?.upvotes - a?.downvotes) + a?.replies?.length * 2;
-          const bScore = (b?.upvotes - b?.downvotes) + b?.replies?.length * 2;
+        filtered.sort((a, b) => {
+          const aScore = a.likes + a.replies * 2;
+          const bScore = b.likes + b.replies * 2;
           return bScore - aScore;
         });
         break;
       case 'unanswered':
-        filtered = filtered?.filter(post => post?.isQuestion && post?.replies?.length === 0);
-        filtered?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        filtered = filtered.filter(post => 
+          post.type === 'question' && (!post.replies || post.replies === 0)
+        );
+        filtered.sort((a, b) => new Date(b.time) - new Date(a.time));
         break;
       default: // recent
-        filtered?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        filtered.sort((a, b) => new Date(b.time) - new Date(a.time));
     }
 
     return filtered;
   }, [posts, searchQuery, filters, sortBy, viewMode]);
-
-  const handlePostAction = (action, postId, data) => {
-    onPostAction(action, postId, data);
-  };
 
   return (
     <div className="flex-1 max-w-4xl mx-auto">
@@ -104,23 +114,25 @@ const ForumFeed = ({ posts, searchQuery, filters, onPostAction }) => {
           
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Icon name="MessageSquare" size={16} />
-            <span>{filteredAndSortedPosts?.length} posts found</span>
+            <span>{transformedAndFilteredPosts.length} posts found</span>
           </div>
         </div>
       </div>
+
       {/* Posts Feed */}
       <div className="space-y-6">
-        {filteredAndSortedPosts?.length > 0 ? (
-          filteredAndSortedPosts?.map((post) => (
-            <ForumPost
-              key={post?.id}
-              post={post}
-              onUpvote={(id) => handlePostAction('upvote', id)}
-              onDownvote={(id) => handlePostAction('downvote', id)}
-              onReply={(id, content) => handlePostAction('reply', id, content)}
-              onBookmark={(id) => handlePostAction('bookmark', id)}
-            />
-          ))
+        {transformedAndFilteredPosts.length > 0 ? (
+          <ActivityFeed
+            activities={transformedAndFilteredPosts}
+            variant="forum"
+            title={searchQuery ? 'Search Results' : 'Forum Posts'}
+            onItemClick={(activity) => {
+              // Map activity click to appropriate post action
+              const postId = activity.id;
+              const action = activity.type === 'question' ? 'answer' : 'reply';
+              onPostAction(action, postId);
+            }}
+          />
         ) : (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
@@ -128,7 +140,9 @@ const ForumFeed = ({ posts, searchQuery, filters, onPostAction }) => {
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">No posts found</h3>
             <p className="text-muted-foreground mb-4">
-              {searchQuery || filters?.category !== 'all' || filters?.branch !== 'all' ?'Try adjusting your search or filters' :'Be the first to start a discussion!'
+              {searchQuery || filters?.category !== 'all' || filters?.branch !== 'all' 
+                ? 'Try adjusting your search or filters' 
+                : 'Be the first to start a discussion!'
               }
             </p>
             <Button variant="default" iconName="Plus" iconPosition="left">
@@ -137,8 +151,9 @@ const ForumFeed = ({ posts, searchQuery, filters, onPostAction }) => {
           </div>
         )}
       </div>
+
       {/* Load More */}
-      {filteredAndSortedPosts?.length > 0 && (
+      {transformedAndFilteredPosts.length > 0 && (
         <div className="text-center mt-8">
           <Button variant="outline" iconName="ChevronDown" iconPosition="right">
             Load More Posts
