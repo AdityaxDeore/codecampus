@@ -1,23 +1,28 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import ProtectedRoute from "components/ProtectedRoute";
+import Loading from "components/Loading";
+
+// Eagerly loaded components
 import NotFound from "pages/NotFound";
-import CampusForums from './pages/campus-forums';
-import AchievementCenter from './pages/achievement-center';
-import ProblemWorkspace from './pages/problem-workspace';
-import AboutCodeCampus from './pages/about-code-campus';
 import Homepage from './pages/homepage';
 import Login from './pages/login';
-import StudentDashboard from './pages/student-dashboard';
-import ComingSoon from './pages/coming-soon';
-import Projects from './pages/projects';
-import StatusPage from './pages/status';
-import ProblemHistory from './pages/problem-history';
-import Problems from './pages/problems';
-import LearningPathways from './pages/learning-pathways';
-import GoalsHomework from './pages/goals-homework';
+
+// Lazily loaded components
+const CampusForums = lazy(() => import('./pages/campus-forums'));
+const AchievementCenter = lazy(() => import('./pages/achievement-center'));
+const ProblemWorkspace = lazy(() => import('./pages/problem-workspace'));
+const AboutCodeCampus = lazy(() => import('./pages/about-code-campus'));
+const StudentDashboard = lazy(() => import('./pages/student-dashboard'));
+const ComingSoon = lazy(() => import('./pages/coming-soon'));
+const Projects = lazy(() => import('./pages/projects'));
+const StatusPage = lazy(() => import('./pages/status'));
+const ProblemHistory = lazy(() => import('./pages/problem-history'));
+const Problems = lazy(() => import('./pages/problems'));
+const LearningPathways = lazy(() => import('./pages/learning-pathways'));
+const GoalsHomework = lazy(() => import('./pages/goals-homework'));
 
 const Routes = () => {
   return (
@@ -29,20 +34,88 @@ const Routes = () => {
         <Route path="/" element={<Homepage />} />
         <Route path="/homepage" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/about-code-campus" element={<AboutCodeCampus />} />
-        <Route path="/status" element={<StatusPage />} />
+        <Route path="/about-code-campus" element={
+          <Suspense fallback={<Loading />}>
+            <AboutCodeCampus />
+          </Suspense>
+        } />
+        <Route path="/status" element={
+          <Suspense fallback={<Loading />}>
+            <StatusPage />
+          </Suspense>
+        } />
         
         {/* Protected routes */}
-        <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-        <Route path="/campus-forums" element={<ProtectedRoute><CampusForums /></ProtectedRoute>} />
-        <Route path="/achievement-center" element={<ProtectedRoute><AchievementCenter /></ProtectedRoute>} />
-        <Route path="/problems" element={<ProtectedRoute><Problems /></ProtectedRoute>} />
-        <Route path="/learning-pathways" element={<ProtectedRoute><LearningPathways /></ProtectedRoute>} />
-        <Route path="/goals-homework" element={<ProtectedRoute><GoalsHomework /></ProtectedRoute>} />
-        <Route path="/problem-workspace" element={<ProtectedRoute><ProblemWorkspace /></ProtectedRoute>} />
-        <Route path="/problem-history" element={<ProtectedRoute><ProblemHistory /></ProtectedRoute>} />
-        <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
-        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/student-dashboard" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <StudentDashboard />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/campus-forums" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <CampusForums />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/achievement-center" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <AchievementCenter />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/problems" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <Problems />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/learning-pathways" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <LearningPathways />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/goals-homework" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <GoalsHomework />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/problem-workspace" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <ProblemWorkspace />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/problem-history" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <ProblemHistory />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/projects" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <Projects />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/coming-soon" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loading />}>
+              <ComingSoon />
+            </Suspense>
+          </ProtectedRoute>
+        } />
         
         {/* Placeholder routes - Protected */}
         <Route path="/settings" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
