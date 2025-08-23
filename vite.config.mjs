@@ -10,6 +10,17 @@ export default defineConfig({
   build: {
     outDir: "build",
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit'],
+          'vendor-ui': ['@radix-ui/react-slot', 'class-variance-authority', 'clsx', 'framer-motion', 'lucide-react'],
+          'vendor-data': ['d3', 'date-fns', 'axios'],
+          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/analytics', 'firebase/firestore'],
+          'vendor-supabase': ['@supabase/supabase-js']
+        }
+      }
+    }
   },
   plugins: [tsconfigPaths(), react(), tagger()],
   server: {
