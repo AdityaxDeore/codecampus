@@ -21,18 +21,20 @@ src/
 ├── hooks/
 │   └── useAuth.js           # React hook for authentication
 └── utils/
-    └── auth.js              # Unified auth utility (Supabase + Firebase)
+    └── auth.js              # Unified auth utility
 ```
 
 ## 🚀 Quick Start
 
 ### 1. Environment Configuration
 
-Choose your authentication provider by setting the environment variable:
+Set up your Firebase configuration in the environment file:
 
 ```bash
-# In your .env.local file
-VITE_AUTH_PROVIDER=firebase  # or 'supabase'
+# In your .env file
+VITE_FIREBASE_API_KEY=your-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+# ... and other Firebase config values
 ```
 
 ### 2. Using Firebase Authentication
@@ -118,12 +120,7 @@ trackForumInteraction('post_created', postId);
 
 ### Authentication Providers
 
-The app supports dual authentication systems:
-
-1. **Firebase Auth** - Direct Firebase authentication
-2. **Supabase Auth** - Your existing Supabase setup
-
-Switch between them using the `VITE_AUTH_PROVIDER` environment variable.
+The app uses Firebase Authentication for user management.
 
 ### Firestore Collections
 

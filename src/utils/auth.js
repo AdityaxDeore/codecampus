@@ -1,104 +1,30 @@
-import { supabase } from '../lib/supabaseClient';
-import { 
-  signInWithGoogle as firebaseSignInWithGoogle,
-  signInWithGitHub as firebaseSignInWithGitHub,
+import {
+  signInWithGoogle,
+  signInWithGitHub,
   signInWithEmail as firebaseSignInWithEmail,
   signUpWithEmail as firebaseSignUpWithEmail,
-  logOut as firebaseLogOut,
+  logOut,
   getCurrentUser as firebaseGetCurrentUser,
   onAuthStateChange as firebaseOnAuthStateChange
 } from '../lib/firebaseAuth';
 
-// Auth provider preference (can be switched between 'supabase' and 'firebase')
-const AUTH_PROVIDER = import.meta.env.VITE_AUTH_PROVIDER || 'supabase';
-
-// Supabase Auth Functions
-export async function signInWithGoogle() {
-  if (AUTH_PROVIDER === 'firebase') {
-    return await firebaseSignInWithGoogle();
-  }
-  
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.origin + '/student-dashboard',
-    },
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function signInWithGitHub() {
-  if (AUTH_PROVIDER === 'firebase') {
-    return await firebaseSignInWithGitHub();
-  }
-  
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'github',
-    options: {
-      redirectTo: window.location.origin + '/student-dashboard',
-    },
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function signInWithMicrosoft() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'azure',
-    options: {
-      redirectTo: window.location.origin + '/student-dashboard',
-    },
-  });
-  if (error) throw error;
-  return data;
-}
+export { signInWithGoogle, signInWithGitHub };
 
 export async function signInWithEmail(email, password) {
-  if (AUTH_PROVIDER === 'firebase') {
-    return await firebaseSignInWithEmail(email, password);
-  }
-  
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (error) throw error;
-  return data;
+  return await firebaseSignInWithEmail(email, password);
 }
 
 export async function signUpWithEmail(email, password, userData = {}) {
-  if (AUTH_PROVIDER === 'firebase') {
-    return await firebaseSignUpWithEmail(email, password, userData.full_name);
-  }
-  
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: userData,
-    },
-  });
-  if (error) throw error;
-  return data;
+  return await firebaseSignUpWithEmail(email, password, userData.full_name);
 }
 
 export async function signOut() {
-  if (AUTH_PROVIDER === 'firebase') {
-    return await firebaseLogOut();
-  }
-  
-  await supabase.auth.signOut();
+  return await logOut();
 }
 
 export async function getSession() {
-  if (AUTH_PROVIDER === 'firebase') {
-    const user = firebaseGetCurrentUser();
-    return user ? { user } : null;
-  }
-  
-  const { data: { session } } = await supabase.auth.getSession();
-  return session;
+  const user = firebaseGetCurrentUser();
+  return user ? { user } : null;
 }
 
 export async function getCurrentUser() {
