@@ -1,12 +1,13 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
-import HeroSection from './components/HeroSection';
-import ValueProposition from './components/ValueProposition';
+import HeroSection from '../../shared/components/HeroSection';
+import ValueProposition from '../../shared/components/ValueProposition';
+import StatsSection from '../../shared/components/StatsSection';
 import ActivityFeed from './components/ActivityFeed';
 import FeaturedProjects from './components/FeaturedProjects';
-import UniversityPartnerships from './components/UniversityPartnerships';
-import TestimonialSection from './components/TestimonialSection';
+import UniversityPartnerships from '../../shared/components/UniversityPartnerships';
+import TestimonialSection from '../../shared/components/TestimonialSection';
 import Footer from './components/Footer';
 
 const Homepage = () => {
@@ -29,12 +30,13 @@ const Homepage = () => {
         <Header />
         
         <main>
-          <HeroSection />
-          <ValueProposition />
+          <HeroSection variant="homepage" />
+          <ValueProposition variant="homepage" />
+          <StatsSection variant="homepage" />
           <ActivityFeed />
           <FeaturedProjects />
-          <UniversityPartnerships />
-          <TestimonialSection />
+          <UniversityPartnerships variant="homepage" />
+          <TestimonialSection variant="homepage" />
         </main>
 
         <Footer />
