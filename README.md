@@ -1,53 +1,60 @@
-# React
+# CodeCampus
 
-A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
+A collaborative learning platform for computer science students, combining academic excellence with real-world coding experience.
 
 ## 🚀 Features
 
-- **React 18** - React version with improved rendering and concurrent features
-- **Vite** - Lightning-fast build tool and development server
-- **Redux Toolkit** - State management with simplified Redux setup
-- **TailwindCSS** - Utility-first CSS framework with extensive customization
-- **React Router v6** - Declarative routing for React applications
-- **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
-- **Form Management** - React Hook Form for efficient form handling
-- **Animation** - Framer Motion for smooth UI animations
-- **Testing** - Jest and React Testing Library setup
+- **Interactive Learning** - Collaborative problem solving and peer code reviews
+- **University Integration** - Seamless integration with academic curricula
+- **Career Preparation** - Industry mentorship and job placement support
+- **Project Showcase** - Portfolio building and skill tracking
+- **Community Forums** - Knowledge sharing and discussion spaces
 
-## 📋 Prerequisites
+## 💻 Tech Stack
 
-- Node.js (v14.x or higher)
-- npm or yarn
+- **React 18** with Suspense and Code Splitting
+- **Vite** for optimized builds and fast development
+- **TailwindCSS** for responsive design
+- **Firebase** for authentication and real-time features
+- **Supabase** for database and backend services
+- **Framer Motion** for smooth animations
 
-## 🛠️ Installation
+## 🛠️ Development
 
-1. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-   
-2. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
 
 ## 📁 Project Structure
 
 ```
-react_app/
-├── public/             # Static assets
+codecampus/
 ├── src/
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Page components
-│   ├── styles/         # Global styles and Tailwind configuration
-│   ├── App.jsx         # Main application component
-│   ├── Routes.jsx      # Application routes
-│   └── index.jsx       # Application entry point
-├── .env                # Environment variables
+│   ├── components/     # Common UI components
+│   ├── shared/        # Shared components and data
+│   ├── pages/         # Page components
+│   ├── lib/           # Firebase and Supabase setup
+│   ├── utils/         # Helper functions
+│   └── styles/        # Global styles and Tailwind
+```
+
+## 🔥 Performance
+
+- Route-based code splitting for optimal loading
+- Vendor chunk optimization
+- Lazy-loaded components with Suspense
+- Optimized bundle size with manual chunks
+
+## 📄 License
+
+MIT License - see LICENSE file for details
 ├── index.html          # HTML template
 ├── package.json        # Project dependencies and scripts
 ├── tailwind.config.js  # Tailwind CSS configuration
