@@ -297,27 +297,27 @@ body {
   background-color: #30363d !important;
 }
 
-/* Light mode navigation styles */
-nav a {
+/* Light mode navigation styles - but don't override active states */
+nav a:not(.bg-primary) {
   background-color: transparent !important;
 }
 
-nav a:hover {
-  background-color: transparent !important;
-  color: var(--color-primary, #0969da) !important;
-}
-
-nav button {
-  background-color: transparent !important;
-}
-
-nav button:hover {
+nav a:not(.bg-primary):hover {
   background-color: transparent !important;
   color: var(--color-primary, #0969da) !important;
 }
 
-/* Override Tailwind hover states for navigation */
-.hover\:bg-muted:hover {
+nav button:not(.bg-primary) {
+  background-color: transparent !important;
+}
+
+nav button:not(.bg-primary):hover {
+  background-color: transparent !important;
+  color: var(--color-primary, #0969da) !important;
+}
+
+/* Override Tailwind hover states for navigation - but not for active states */
+.hover\:bg-muted:hover:not(.bg-primary) {
   background-color: transparent !important;
 }
 
